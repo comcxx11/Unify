@@ -1,0 +1,26 @@
+disabled_rules:
+  - colon
+  - comma
+  - control_statement
+  - identifier_name
+  - shorthand_operator
+  - empty_count
+  - line_length
+  - type_name
+  - force_cast
+  - force_try
+  - cyclomatic_complexity
+  - unused_optional_binding
+  - trailing_whitespace         # 공백
+  - missing_docs                # 문서화
+  - function_body_length        # 함수 40줄 이상
+  - nesting                     # 중첨 nest 클래스
+opt_in_rules:
+  - empty_count
+  - missing_docs
+included:
+excluded:
+  - Carthage
+  - Pods
+  - vpwTests
+  - vpwUITests
