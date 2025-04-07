@@ -13,16 +13,16 @@ import Combine
     func bindViewModel()
 }
 
-final class BaseViewController: UIViewController, BaseViewControllerProtocol {
+class BaseViewController: UIViewController, BaseViewControllerProtocol {
     
-    var coordinator: Coordinator?
+    var c: Coordinator?
     
     var cancellables: Set<AnyCancellable> = []
     
     let viewDidLoadSubject = PassthroughSubject<Void, Never>()
     
-    init(coordinator: Coordinator? = nil) {
-        self.coordinator = coordinator
+    init(c: Coordinator? = nil) {
+        self.c = c
         super.init(nibName: nil, bundle: nil)
     }
     
