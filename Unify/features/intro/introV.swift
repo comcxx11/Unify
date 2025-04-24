@@ -21,6 +21,7 @@ final class IntroV: BaseView {
         backgroundImageView.clipsToBounds = true
         
         backgroundImageView.image = UIImage(named: "")
+        self.backgroundColor = .red
     }
     
     override func setupConstraints() {

@@ -26,7 +26,16 @@ final class IntroCoordinator: Coordinator {
     var cancellables: Set<AnyCancellable> = []
     
     func start() {
+        let vc = IntroVC(vm: IntroVM(), c: self)
         
+        vc.didCoordinator = { [weak self] event in
+            switch event {
+            case .launch:
+                self?.finish()
+            }
+        }
+        
+        navigationController.pushViewController(vc, animated: true)
     }
     
     func binding() {

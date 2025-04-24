@@ -23,6 +23,8 @@ class BaseViewModel: ViewModelable {
     
     struct Output { }
     
+    var cancellables = Set<AnyCancellable>()
+    
     func transform(input: Input) -> Output {
         Output()
     }

@@ -13,6 +13,8 @@ final class IntroVC: BaseViewController {
     private let v = IntroV()
     private let vm: IntroVM
     
+    var didCoordinator: ((IntroVM.CoordinatorEvent) -> Void)?
+    
     init(vm: IntroVM, c: Coordinator? = nil) {
         self.vm = vm
         super.init(c: c)
@@ -27,6 +29,22 @@ final class IntroVC: BaseViewController {
     }
     
     override func bindViewModel() {
+        
+        let input = IntroVM.Input(
+            viewDidLoad: Just(()).eraseToAnyPublisher()
+        )
+        
+        let output = vm.transform(input: input)
+        
+        output.coordinator
+            .sink { [weak self] event in
+                switch event {
+                case .launch:
+                    self?.c?.finish()
+                }
+            }
+            .store(in: &cancellables)
+        
         
     }
 }

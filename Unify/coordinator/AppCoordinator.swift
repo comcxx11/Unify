@@ -56,7 +56,7 @@ extension AppCoordinator: AppCoordinatorProtocol {
     
     /// 메인 플로우
     func showMainFlow() {
-        
+        print("MainFlow")
     }
     
 }

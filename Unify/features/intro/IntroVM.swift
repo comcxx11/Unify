@@ -9,17 +9,32 @@ import Combine
 
 final class IntroVM: BaseViewModel {
     
-    enum NavigationEvent { }
+    enum CoordinatorEvent {
+        case launch
+    }
     
     struct Input {
-        
+        let viewDidLoad: AnyPublisher<Void, Never>
     }
     
     struct Output {
+        let coordinator: AnyPublisher<CoordinatorEvent, Never>
+    }
+    
+    override init() {
         
     }
     
     func transform(input: Input) -> Output {
-        Output()
+        
+        let coordinatorSubject = PassthroughSubject<CoordinatorEvent, Never>()
+        
+        input.viewDidLoad
+            .sink {
+                coordinatorSubject.send(.launch)
+            }
+            .store(in: &cancellables)
+        
+        return Output(coordinator: coordinatorSubject.eraseToAnyPublisher())
     }
 }
