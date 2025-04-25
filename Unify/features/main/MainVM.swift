@@ -11,9 +11,7 @@ protocol MainVMType {
     func transform(from input: MainVM.Input) -> MainVM.Output
 }
 
-final class MainVM: MainVMType {
-    
-    private var cancellables = Set<AnyCancellable>()
+final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
     
     enum CoordinatorEvent {
         case next
@@ -27,8 +25,6 @@ final class MainVM: MainVMType {
     struct Output {
         let coordinatorEvent: AnyPublisher<CoordinatorEvent, Never>
     }
-    
-    private let coordinatorEventSubject = PassthroughSubject<CoordinatorEvent, Never>()
     
     func transform(from input: Input) -> Output {
         

@@ -7,7 +7,7 @@
 
 import Combine
 
-final class IntroVM: BaseViewModel {
+final class IntroVM: BaseViewModel<IntroVM.CoordinatorEvent> {
     
     enum CoordinatorEvent {
         case launch
@@ -27,14 +27,12 @@ final class IntroVM: BaseViewModel {
     
     func transform(input: Input) -> Output {
         
-        let coordinatorSubject = PassthroughSubject<CoordinatorEvent, Never>()
-        
         input.viewDidLoad
-            .sink {
-                coordinatorSubject.send(.launch)
+            .sink { [weak self] in
+                self?.coordinatorEventSubject.send(.launch)
             }
             .store(in: &cancellables)
         
-        return Output(coordinator: coordinatorSubject.eraseToAnyPublisher())
+        return Output(coordinator: coordinatorEventSubject.eraseToAnyPublisher())
     }
 }

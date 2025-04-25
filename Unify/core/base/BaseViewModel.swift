@@ -8,22 +8,24 @@
 import Combine
 
 protocol ViewModelable {
-    associatedtype NavigationEvent
+    associatedtype CoordinatorEvent
     associatedtype Input
     associatedtype Output
     
     func transform(input: Input) -> Output
 }
 
-class BaseViewModel: ViewModelable {
+class BaseViewModel<Event>: ViewModelable {
     
-    enum NavigationEvent { }
+    enum CoordinatorEvent { }
     
     struct Input { }
     
     struct Output { }
     
     var cancellables = Set<AnyCancellable>()
+    
+    let coordinatorEventSubject = PassthroughSubject<Event, Never>()
     
     func transform(input: Input) -> Output {
         Output()

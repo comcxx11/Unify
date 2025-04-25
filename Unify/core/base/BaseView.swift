@@ -9,12 +9,16 @@ import UIKit
 import Combine
 
 protocol ViewBuildable {
+    associatedtype ButtonEvent
+    
     func addSubviews()
     func configureSubviews()
     func setupConstraints()
 }
 
 class BaseView<Event>: UIView, ViewBuildable {
+    
+    enum ButtonEvent { }
     
     var cancellables: Set<AnyCancellable> = []
     
