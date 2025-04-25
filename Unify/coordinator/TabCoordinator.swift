@@ -66,7 +66,10 @@ extension TabCoordinator {
             c.start()
             childCoordinators.append(c)
         case .setting:
-            break
+            let c = SettingCoordinator(nav)
+            c.finishDelegate = finishDelegate
+            c.start()
+            childCoordinators.append(c)
         }
         
         return nav
