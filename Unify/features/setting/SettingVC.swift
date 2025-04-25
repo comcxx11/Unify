@@ -31,5 +31,12 @@ final class SettingVC: BaseViewController {
     
     override func bindVM() {
         
+        let input = SettingVM.Input(
+            viewDidLoad: viewDidLoadSubject.eraseToAnyPublisher(),
+            buttonTapped: v.buttonTappedSubject.eraseToAnyPublisher()
+        )
+        
+        let output = vm.transform(from: input)
+        
     }
 }

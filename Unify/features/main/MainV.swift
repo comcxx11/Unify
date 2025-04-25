@@ -8,12 +8,11 @@
 import UIKit
 import SnapKit
 
-final class MainV: BaseView {
+final class MainV: BaseView<MainV.ButtonEvent> {
     
     enum ButtonEvent {
         
     }
-    
     let title = UILabel().then {
         $0.text = "Hello"
     }

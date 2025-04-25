@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 protocol ViewBuildable {
     func addSubviews()
@@ -13,7 +14,13 @@ protocol ViewBuildable {
     func setupConstraints()
 }
 
-class BaseView: UIView, ViewBuildable {
+class BaseView<Event>: UIView, ViewBuildable {
+    
+    enum ButtonEvent {
+        
+    }
+    
+    let buttonTappedSubject = PassthroughSubject<Event, Never>()
     
     override init(frame: CGRect) {
         super.init(frame: frame)

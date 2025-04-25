@@ -9,7 +9,12 @@ import UIKit
 import SnapKit
 import Combine
 
-final class IntroV: BaseView {
+final class IntroV: BaseView<IntroV.ButtonEvent> {
+    
+    enum ButtonEvent {
+        
+    }
+    
     private let backgroundImageView = UIImageView()
     
     override func addSubviews() {

@@ -8,7 +8,8 @@
 import UIKit
 import SnapKit
 
-final class SettingV: BaseView {
+
+final class SettingV: BaseView<SettingV.ButtonEvent> {
     
     enum ButtonEvent {
         
