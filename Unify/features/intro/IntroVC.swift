@@ -31,7 +31,7 @@ final class IntroVC: BaseViewController {
     override func bindViewModel() {
         
         let input = IntroVM.Input(
-            viewDidLoad: Just(()).eraseToAnyPublisher()
+            viewDidLoad: viewDidLoadSubject.eraseToAnyPublisher()
         )
         
         let output = vm.transform(input: input)
