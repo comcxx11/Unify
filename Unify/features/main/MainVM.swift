@@ -7,15 +7,16 @@
 
 import Combine
 
-
 protocol MainVMType {
     func transform(from input: MainVM.Input) -> MainVM.Output
 }
 
 final class MainVM: MainVMType {
     
+    private var cancellables = Set<AnyCancellable>()
+    
     enum CoordinatorEvent {
-        case launch
+        case next
     }
     
     struct Input {
@@ -24,12 +25,31 @@ final class MainVM: MainVMType {
     }
     
     struct Output {
-        
+        let coordinatorEvent: AnyPublisher<CoordinatorEvent, Never>
     }
     
-    private let navigationSubject = PassthroughSubject<CoordinatorEvent, Never>()
+    private let coordinatorEventSubject = PassthroughSubject<CoordinatorEvent, Never>()
     
     func transform(from input: Input) -> Output {
-        Output()
+        
+        input.viewDidLoad
+            .sink {
+                
+            }
+            .store(in: &cancellables)
+        
+        input.buttonTapped
+            .sink { [weak self] in
+                switch $0 {
+                case .next:
+                    self?.coordinatorEventSubject.send(.next)
+                }
+            }
+            .store(in: &cancellables)
+        
+        return Output(
+            coordinatorEvent: coordinatorEventSubject.eraseToAnyPublisher()
+        )
+        
     }
 }

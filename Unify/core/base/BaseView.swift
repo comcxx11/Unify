@@ -16,27 +16,22 @@ protocol ViewBuildable {
 
 class BaseView<Event>: UIView, ViewBuildable {
     
-    enum ButtonEvent {
-        
-    }
+    var cancellables: Set<AnyCancellable> = []
     
     let buttonTappedSubject = PassthroughSubject<Event, Never>()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupUI()
+        addSubviews()
+        configureSubviews()
+        setupConstraints()
+        setupEvents()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupUI() {
-        addSubviews()
-        configureSubviews()
-        setupConstraints()
-    }
-
     func addSubviews() {
         
     }
@@ -46,6 +41,10 @@ class BaseView<Event>: UIView, ViewBuildable {
     }
     
     func setupConstraints() {
+        
+    }
+    
+    func setupEvents() {
         
     }
 

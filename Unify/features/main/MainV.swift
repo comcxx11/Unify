@@ -11,14 +11,17 @@ import SnapKit
 final class MainV: BaseView<MainV.ButtonEvent> {
     
     enum ButtonEvent {
-        
+        case next
     }
-    let title = UILabel().then {
-        $0.text = "Hello"
+    
+    let button = UIButton().then {
+        $0.setTitle("다음", for: .normal)
+        $0.setTitleColor(.white, for: .normal)
+        $0.backgroundColor = .blue
     }
     
     override func addSubviews() {
-        [title].forEach {
+        [button].forEach {
             addSubview($0)
         }
     }
@@ -28,8 +31,17 @@ final class MainV: BaseView<MainV.ButtonEvent> {
     }
     
     override func setupConstraints() {
-        title.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
+        
+        button.snp.makeConstraints {
+            $0.leading.trailing.bottom.equalToSuperview().inset(16)
+            $0.height.equalTo(50)
         }
+        
+    }
+    
+    override func setupEvents() {
+        button
+            .bindTap(to: buttonTappedSubject, event: .next)
+            .store(in: &cancellables)
     }
 }
