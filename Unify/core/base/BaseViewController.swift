@@ -9,8 +9,8 @@ import UIKit
 import Combine
 
 @objc protocol BaseViewControllerProtocol {
-    func bindView()
-    func bindViewModel()
+    func bindV()
+    func bindVM()
 }
 
 class BaseViewController: UIViewController, BaseViewControllerProtocol {
@@ -37,17 +37,17 @@ class BaseViewController: UIViewController, BaseViewControllerProtocol {
     
     override func viewDidLoad() {
         // 1) View와의 이벤트 바인딩
-        bindView()
+        bindV()
         
         // 2) ViewModel 바인딩
-        bindViewModel()
+        bindVM()
         
         viewDidLoadSubject.send(())
     }
     
-    func bindView() { }
+    func bindV() { }
     
-    func bindViewModel() { }
+    func bindVM() { }
     
 }
 

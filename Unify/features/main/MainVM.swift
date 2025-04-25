@@ -7,7 +7,12 @@
 
 import Combine
 
-final class MainVM: BaseViewModel {
+
+protocol MainVMType {
+    func transform(from input: MainVM.Input) -> MainVM.Output
+}
+
+final class MainVM: MainVMType {
     
     enum CoordinatorEvent {
         case launch
@@ -22,13 +27,9 @@ final class MainVM: BaseViewModel {
         
     }
     
-    override init() {
-        
-    }
-    
     private let navigationSubject = PassthroughSubject<CoordinatorEvent, Never>()
     
-    func transform(input: Input) -> Output {
+    func transform(from input: Input) -> Output {
         Output()
     }
 }

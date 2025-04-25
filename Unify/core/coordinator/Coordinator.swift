@@ -73,6 +73,7 @@ protocol CoordinatorFinishDelegate: AnyObject {
 /// 애플리케이션의 플로우 유형을 구분하기 위한 열거형
 enum CoordinatorType {
     case app
+    case main
     case login
     case tab
     case intro

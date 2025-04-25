@@ -24,11 +24,11 @@ final class IntroVC: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func bindView() {
+    override func bindV() {
         view = v
     }
     
-    override func bindViewModel() {
+    override func bindVM() {
         
         let input = IntroVM.Input(
             viewDidLoad: viewDidLoadSubject.eraseToAnyPublisher()

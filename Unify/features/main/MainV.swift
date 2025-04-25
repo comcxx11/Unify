@@ -25,7 +25,7 @@ final class MainV: BaseView {
     }
     
     override func configureSubviews() {
-        
+        backgroundColor = .yellow
     }
     
     override func setupConstraints() {

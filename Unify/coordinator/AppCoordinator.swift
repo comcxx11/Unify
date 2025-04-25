@@ -56,7 +56,10 @@ extension AppCoordinator: AppCoordinatorProtocol {
     
     /// 메인 플로우
     func showMainFlow() {
-        print("MainFlow")
+        let c = TabCoordinator(navigationController)
+        c.finishDelegate = self
+        c.start()
+        childCoordinators.append(c)
     }
     
 }
