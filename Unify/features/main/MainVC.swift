@@ -16,6 +16,8 @@ final class MainVC: BaseViewController {
     private let v = MainV()
     private let vm: MainVMType
     
+    var didCoordinator: ((MainVM.CoordinatorEvent) -> Void)?
+    
     init(vm: MainVMType, c: Coordinator? = nil) {
         self.vm = vm
         super.init(c: c)
@@ -56,11 +58,9 @@ final class MainVC: BaseViewController {
         let output = vm.transform(from: input)
         
         output.coordinatorEvent
+            .receive(on: RunLoop.main)
             .sink {
-                switch $0 {
-                case .next:
-                    self.c?.finish()
-                }
+                self.didCoordinator?($0)
             }
             .store(in: &cancellables)
     }

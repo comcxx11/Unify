@@ -15,6 +15,7 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
     
     enum CoordinatorEvent {
         case next
+        case notice
     }
     
     struct Input {
@@ -38,7 +39,7 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
             .sink { [weak self] in
                 switch $0 {
                 case .next:
-                    self?.coordinatorEventSubject.send(.next)
+                    self?.coordinatorEventSubject.send(.notice)
                 }
             }
             .store(in: &cancellables)

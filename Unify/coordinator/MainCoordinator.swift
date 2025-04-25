@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import SwiftUI
 
 protocol WalletCordinatorProtocoal: Coordinator {
     
@@ -31,11 +32,27 @@ final class MainCoordinator: WalletCordinatorProtocoal {
     
     func start() {
         let vc = MainVC(vm: MainVM(), c: self)
+        vc.didCoordinator = { [weak self] in
+            switch $0 {
+            case .next:
+                self?.finish()
+            case .notice:
+                self?.showNotice()
+            }
+        }
         self.navigationController.pushViewController(vc, animated: false)
     }
     
     func binding() {
         
+    }
+    
+    func showNotice() {
+        let vm = NoticeVM()
+        let v = NoticeV(vm: vm)
+        let vc = UIHostingController(rootView: v)
+        
+        self.navigationController.pushViewController(vc, animated: true)
     }
     
     
