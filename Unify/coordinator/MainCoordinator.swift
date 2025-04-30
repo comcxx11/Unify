@@ -37,7 +37,8 @@ final class MainCoordinator: WalletCordinatorProtocoal {
             case .next:
                 self?.finish()
             case .notice:
-                self?.showNotice()
+                // self?.showNotice()
+                self?.showAppVersion()
             }
         }
         self.navigationController.pushViewController(vc, animated: false)
@@ -55,5 +56,19 @@ final class MainCoordinator: WalletCordinatorProtocoal {
         self.navigationController.pushViewController(vc, animated: true)
     }
     
+    func showAppVersion() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: AppVersionVC.identifier) as! AppVersionVC
+        vc.inject(vmProvider: {
+            AppVersionVM()
+        }, coordinator: self)
+        vc.didCoordinator = { [weak vc] event in
+            switch event {
+            case .back:
+                vc?.navigationController?.popViewController(animated: true)
+            }
+        }
+        navigationController.pushViewController(vc, animated: true)
+    }
     
 }
