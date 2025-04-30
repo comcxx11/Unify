@@ -62,10 +62,10 @@ final class MainCoordinator: WalletCordinatorProtocoal {
         vc.inject(vmProvider: {
             AppVersionVM()
         }, coordinator: self)
-        vc.didCoordinator = { [weak vc] event in
-            switch event {
+        vc.didCoordinator = { [weak self] in
+            switch $0 {
             case .back:
-                vc?.navigationController?.popViewController(animated: true)
+                self?.navigationController.popViewController(animated: true)
             }
         }
         navigationController.pushViewController(vc, animated: true)
