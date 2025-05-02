@@ -28,7 +28,7 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
     struct Output {
         let coordinatorEvent: AnyPublisher<CoordinatorEvent, Never>
         let animalsResponsePubliser: AnyPublisher<[Animal], Never>
-        let citiesResponsePubliser: AnyPublisher<[City], Never>
+        let citiesResponsePubliser: AnyPublisher<[City]?, NetworkError>
     }
     
     func transform(from input: Input) -> Output {
@@ -48,12 +48,19 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
             }
         
         let citiesResponsePubliser = apiEventReceived
-            .compactMap { event -> [City]? in
-                if case let .citiesResponse(apiResponse) = event {
-                    return apiResponse.data
+            .tryMap { event -> [City]? in
+                guard case let .citiesResponse(apiResponse) = event else {
+                    throw NetworkError.requestFailed
                 }
-                return nil
+
+                
+                guard apiResponse.meta.statusCode == 200 else {
+                    throw NetworkError.apiError(apiResponse.meta.message)
+                }
+                
+                return apiResponse.data
             }
+            .mapError { $0 as? NetworkError ?? .requestFailed }
         
         input.buttonTapped
             .sink { [weak self] in
@@ -92,14 +99,20 @@ extension MainVM {
     }
     
     private func fetchCities() {
-        print("fetch ...")
         JsonService.shared.cities()
-            .sink {completion in
-                print("com \(completion)")
-            } receiveValue: {  [weak self] response in
+            .handleEvents(receiveSubscription: { _ in
+                print("🌐 도시 불러오는 중...")
+            }, receiveCompletion: { completion in
+                print("🔚 Completion: \(completion)")
+            })
+            .sink(receiveCompletion: { [weak self] completion in
+                if case let .failure(error) = completion {
+                    ErrorPopupManager.shared.showError(error)
+                    self?.apiEventReceived.send(.citiesFailed(error))
+                }
+            }, receiveValue: { [weak self] response in
                 self?.apiEventReceived.send(.citiesResponse(response))
-            }
+            })
             .store(in: &cancellables)
-
     }
 }

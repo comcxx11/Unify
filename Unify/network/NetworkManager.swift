@@ -40,7 +40,7 @@ final class NetworkManager {
                        parameters: parameters,
                        encoding: encoding,
                        headers: headers)
-            .validate()
+            // .validate()
             .responseDecodable(of: T.self) { response in
                 
                 defer {
@@ -74,6 +74,8 @@ final class NetworkManager {
         .eraseToAnyPublisher()
     }
     
+    // 401, 403, 500 같은 HTTP 에러 응답 (.validate 가 없으면 여기로 오지 않음)
+    // 서버 응답 바디가 이상하거나 decoding 실패 (언제나 여기로 옴)
     private func handleError(_ error: AFError) -> NetworkError {
         print("error[\(error.localizedDescription)]")
         if let urlError = error.underlyingError as? URLError {

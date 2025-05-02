@@ -73,9 +73,12 @@ final class MainVC: BaseViewController {
         
         output.citiesResponsePubliser
             .receive(on: RunLoop.main)
-            .sink {
-                print("❤️ \($0)")
+            .sink { completion in
+                print(completion)
+            } receiveValue: {
+                print("❤️ \($0 ?? [])")
             }
             .store(in: &cancellables)
+
     }
 }

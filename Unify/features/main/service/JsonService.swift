@@ -18,6 +18,7 @@ struct JsonResponse: Decodable {
 enum JsonServiceEvent {
     case animalResponse(ApiResponse<[Animal]>)
     case citiesResponse(ApiResponse<[City]>)
+    case citiesFailed(NetworkError)
 }
 
 protocol JsonServiceProtocol {

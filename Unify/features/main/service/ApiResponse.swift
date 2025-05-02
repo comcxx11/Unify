@@ -10,7 +10,7 @@ import Foundation
 
 struct ApiResponse<T: Decodable>: Decodable {
     let meta: Meta
-    let data: T
+    let data: T?
 }
 
 struct Meta: Codable {
