@@ -34,9 +34,25 @@ final class MainV: BaseView<MainV.ButtonEvent> {
         $0.backgroundColor = .clear
         $0.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
     }
+    
+    private let loadingView = UIVisualEffectView(effect: UIBlurEffect(style: .light)).then {
+        $0.isHidden = true
+        $0.layer.cornerRadius = 10
+        $0.clipsToBounds = true
+
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.color = .darkGray
+        indicator.startAnimating()
+        $0.contentView.addSubview(indicator)
+
+        indicator.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
+    }
 
     override func addSubviews() {
         addSubview(tableView)
+        addSubview(loadingView)
     }
 
     override func configureSubviews() {
@@ -49,8 +65,16 @@ final class MainV: BaseView<MainV.ButtonEvent> {
         tableView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(16)
         }
+        
+        
+        loadingView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
     }
     
+    func showLoading(_ isLoading: Bool) {
+        loadingView.isHidden = !isLoading
+    }
 }
 
 extension MainV: UITableViewDataSource, UITableViewDelegate {

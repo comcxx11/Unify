@@ -73,14 +73,14 @@ final class MainVC: BaseViewController {
             .sink { completion in
                 print(completion)
                 print("❤️ finished")
-            } receiveValue: {
+            } receiveValue: { [weak self] in
                 switch $0 {
                 case .loading:
-                    print("LOADING")
+                    self?.v.showLoading(true)
                 case let .success(cities):
                     print(cities)
                 case .idle:
-                    print("IDLE")
+                    self?.v.showLoading(false)
                 case let .failure(meta):
                     print(meta)
                 }
