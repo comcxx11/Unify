@@ -31,7 +31,7 @@ final class MainCoordinator: WalletCordinatorProtocoal {
     var cancellables: Set<AnyCancellable> = []
     
     func start() {
-        let vc = MainVC(vm: MainVM(), c: self)
+        let vc = MainVC(vm: MainVM(service: JsonService()), c: self)
         vc.didCoordinator = { [weak self] in
             switch $0 {
             case .next:
