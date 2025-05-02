@@ -18,6 +18,8 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
         case notice
     }
     
+    private var apiEventReceived = PassthroughSubject<JsonServiceEvent, Never>()
+    
     struct Input {
         let viewDidLoad: AnyPublisher<Void, Never>
         let buttonTapped: AnyPublisher<MainV.ButtonEvent, Never>
@@ -25,6 +27,8 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
     
     struct Output {
         let coordinatorEvent: AnyPublisher<CoordinatorEvent, Never>
+        let animalsResponsePubliser: AnyPublisher<[Animal], Never>
+        let citiesResponsePubliser: AnyPublisher<[City], Never>
     }
     
     func transform(from input: Input) -> Output {
@@ -35,6 +39,22 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
             }
             .store(in: &cancellables)
         
+        let animalsResponsePubliser = apiEventReceived
+            .compactMap { event -> [Animal]? in
+                if case let .animalResponse(apiResponse) = event {
+                    return apiResponse.data
+                }
+                return nil
+            }
+        
+        let citiesResponsePubliser = apiEventReceived
+            .compactMap { event -> [City]? in
+                if case let .citiesResponse(apiResponse) = event {
+                    return apiResponse.data
+                }
+                return nil
+            }
+        
         input.buttonTapped
             .sink { [weak self] in
                 switch $0 {
@@ -42,12 +62,16 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
                     self?.coordinatorEventSubject.send(.notice)
                 case .animals:
                     self?.fetchAnimals()
+                case .cities:
+                    self?.fetchCities()
                 }
             }
             .store(in: &cancellables)
         
         return Output(
-            coordinatorEvent: coordinatorEventSubject.eraseToAnyPublisher()
+            coordinatorEvent: coordinatorEventSubject.eraseToAnyPublisher(),
+            animalsResponsePubliser: animalsResponsePubliser.eraseToAnyPublisher(),
+            citiesResponsePubliser: citiesResponsePubliser.eraseToAnyPublisher()
         )
         
     }
@@ -55,10 +79,23 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
     private func fetchAnimals() {
         print("fetch ...")
         JsonService.shared.animals()
-            .sink { completion in
+            .sink {completion in
                 print("com \(completion)")
-            } receiveValue: { response in
-                print(response)
+            } receiveValue: {  [weak self] response in
+                self?.apiEventReceived.send(.animalResponse(response))
+            }
+            .store(in: &cancellables)
+
+    }
+    
+    
+    private func fetchCities() {
+        print("fetch ...")
+        JsonService.shared.cities()
+            .sink {completion in
+                print("com \(completion)")
+            } receiveValue: {  [weak self] response in
+                self?.apiEventReceived.send(.citiesResponse(response))
             }
             .store(in: &cancellables)
 

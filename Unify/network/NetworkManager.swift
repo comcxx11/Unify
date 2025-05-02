@@ -94,7 +94,7 @@ final class NetworkManager {
         case 500...599:
             return .serverError
         default:
-            print("🕹️ [ERA : \(responseCode)]")
+            print("🕹️ [ERA : \(responseCode)] \(error.localizedDescription)")
             return .requestFailed
         }
     }

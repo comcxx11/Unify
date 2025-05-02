@@ -63,5 +63,19 @@ final class MainVC: BaseViewController {
                 self.didCoordinator?($0)
             }
             .store(in: &cancellables)
+        
+        output.animalsResponsePubliser
+            .receive(on: RunLoop.main)
+            .sink {
+                print("❤️ \($0)")
+            }
+            .store(in: &cancellables)
+        
+        output.citiesResponsePubliser
+            .receive(on: RunLoop.main)
+            .sink {
+                print("❤️ \($0)")
+            }
+            .store(in: &cancellables)
     }
 }

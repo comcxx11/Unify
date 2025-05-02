@@ -13,6 +13,7 @@ final class MainV: BaseView<MainV.ButtonEvent> {
     enum ButtonEvent {
         case next
         case animals
+        case cities
     }
     
     let button = UIButton().then {
@@ -27,8 +28,14 @@ final class MainV: BaseView<MainV.ButtonEvent> {
         $0.backgroundColor = .blue
     }
     
+    let button3 = UIButton().then {
+        $0.setTitle("CITY", for: .normal)
+        $0.setTitleColor(.white, for: .normal)
+        $0.backgroundColor = .blue
+    }
+    
     override func addSubviews() {
-        [button, button2].forEach {
+        [button, button2, button3].forEach {
             addSubview($0)
         }
     }
@@ -49,6 +56,12 @@ final class MainV: BaseView<MainV.ButtonEvent> {
             $0.height.equalTo(50)
         }
         
+        button3.snp.makeConstraints {
+            $0.top.equalTo(button2.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(100)
+            $0.height.equalTo(50)
+        }
+        
     }
     
     override func setupEvents() {
@@ -58,6 +71,10 @@ final class MainV: BaseView<MainV.ButtonEvent> {
         
         button2
             .bindTap(to: buttonTappedSubject, event: .animals)
+            .store(in: &cancellables)
+        
+        button3
+            .bindTap(to: buttonTappedSubject, event: .cities)
             .store(in: &cancellables)
     }
 }
