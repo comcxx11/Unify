@@ -40,6 +40,8 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
                 switch $0 {
                 case .next:
                     self?.coordinatorEventSubject.send(.notice)
+                case .animals:
+                    self?.fetchAnimals()
                 }
             }
             .store(in: &cancellables)
@@ -48,5 +50,17 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
             coordinatorEvent: coordinatorEventSubject.eraseToAnyPublisher()
         )
         
+    }
+    
+    private func fetchAnimals() {
+        print("fetch ...")
+        JsonService.shared.animals()
+            .sink { completion in
+                print("com \(completion)")
+            } receiveValue: { response in
+                print(response)
+            }
+            .store(in: &cancellables)
+
     }
 }
