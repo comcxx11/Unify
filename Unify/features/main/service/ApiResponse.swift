@@ -20,6 +20,13 @@ struct Meta: Codable {
     let message: String
 }
 
+enum ApiEvent<T: Decodable> {
+    case loading
+    case idle
+    case success(ApiResponse<T>)
+    case failure(NetworkError)
+}
+
 enum LoadingState<T> {
     case idle
     case loading

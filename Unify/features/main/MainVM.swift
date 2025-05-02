@@ -19,7 +19,8 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
         case notice
     }
     
-    private var apiEventReceived = PassthroughSubject<ApiEvent<[City]?>, Never>()
+    let cityEvents = PassthroughSubject<ApiEvent<[City]?>, Never>()
+    let animalEvents = PassthroughSubject<ApiEvent<[Animal]?>, Never>()
     
     struct Input {
         let viewDidLoad: AnyPublisher<Void, Never>
@@ -28,7 +29,7 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
     
     struct Output {
         let coordinatorEvent: AnyPublisher<CoordinatorEvent, Never>
-//        let animalsResponsePublisher: AnyPublisher<ApiResponse<[Animal]?>, Never>
+        let animalsResponsePublisher: AnyPublisher<LoadingState<[Animal]>, Never>
         let citiesResponsePublihser: AnyPublisher<LoadingState<[City]>, Never>
     }
     
@@ -40,15 +41,26 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
             }
             .store(in: &cancellables)
         
-//        let animalsResponsePubliser = apiEventReceived
-//            .compactMap { event -> ApiResponse<[Animal]?>? in
-//                if case let .animalResponse(response) = event {
-//                    return response
-//                }
-//                return nil
-//            }
+        let animalsResponsePubliser = animalEvents
+            .compactMap { event -> LoadingState? in
+                if case let .success(response) = event {
+                    if response.meta.statusCode == 200, let animals = response.data {
+                        return .success(animals ?? [])
+                    } else {
+                        return .failure(response.meta)
+                    }
+                }
+                
+                if case .loading = event { return .loading }
+                if case .idle = event { return .idle }
+                if case .failure(let networkError) = event {
+                    print("\(networkError.localizedDescription)")
+                    return .idle
+                }
+                return nil
+            }
         
-        let citiesResponsePublisher = apiEventReceived
+        let citiesResponsePublisher = cityEvents
             .compactMap { event -> LoadingState? in
                 if case let .success(response) = event {
                     if response.meta.statusCode == 200, let cities = response.data {
@@ -73,8 +85,7 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
                 case .next:
                     self?.coordinatorEventSubject.send(.notice)
                 case .animals:
-                    break
-                    //self?.fetchAnimals()
+                    self?.fetchAnimals()
                 case .cities:
                     self?.fetchCities()
                 }
@@ -83,7 +94,7 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
         
         return Output(
             coordinatorEvent: coordinatorEventSubject.eraseToAnyPublisher(),
-//            animalsResponsePublisher: animalsResponsePubliser.eraseToAnyPublisher(),
+            animalsResponsePublisher: animalsResponsePubliser.eraseToAnyPublisher(),
             citiesResponsePublihser: citiesResponsePublisher.eraseToAnyPublisher()
         )
         
@@ -91,29 +102,31 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
 }
 
 extension MainVM {
-//    
-//    private func fetchAnimals() {
-//        print("fetch ...")
-//        JsonService.shared.animals()
-//            .sink {completion in
-//                print("com \(completion)")
-//            } receiveValue: {  [weak self] response in
-//                self?.apiEventReceived.send(.animalResponse(response))
-//            }
-//            .store(in: &cancellables)
-//
-//    }
-//    
-    private func fetchCities() {
-        // apiEventReceived.send(.loading)
-        
-        JsonService.shared.cities()
-            .handleApiEvents(on: apiEventReceived)
+    
+    private func fetchAnimals() {
+        print("fetch ...")
+        JsonService.shared.animals()
+            .handleApiEvents(on: animalEvents)
             .sink { completion in
                 // 실제로는 handleApiEvents에서 처리됐기 때문에 여긴 비워둬도 됨
                 print("🧡 \(completion)")
             } receiveValue: { [weak self] response in
-                self?.apiEventReceived.send(.success(response))
+                self?.animalEvents.send(.success(response))
+            }
+            .store(in: &cancellables)
+
+    }
+    
+    private func fetchCities() {
+        // apiEventReceived.send(.loading)
+        
+        JsonService.shared.cities()
+            .handleApiEvents(on: cityEvents)
+            .sink { completion in
+                // 실제로는 handleApiEvents에서 처리됐기 때문에 여긴 비워둬도 됨
+                print("🧡 \(completion)")
+            } receiveValue: { [weak self] response in
+                self?.cityEvents.send(.success(response))
             }
             .store(in: &cancellables)
     }

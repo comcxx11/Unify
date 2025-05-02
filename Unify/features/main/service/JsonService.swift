@@ -10,13 +10,6 @@ import Foundation
 import Combine
 import Alamofire
 
-enum ApiEvent<T: Decodable> {
-    case loading
-    case idle
-    case success(ApiResponse<T>)
-    case failure(NetworkError)
-}
-
 //enum JsonServiceEvent {
 //    case animalResponse(ApiResponse<[Animal]?>)
 //    case citiesResponse(ApiResponse<[City]?>)

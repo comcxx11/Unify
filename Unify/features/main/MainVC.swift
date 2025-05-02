@@ -60,13 +60,25 @@ final class MainVC: BaseViewController {
                 self.didCoordinator?($0)
             }
             .store(in: &cancellables)
-//        
-//        output.animalsResponsePublisher
-//            .receive(on: RunLoop.main)
-//            .sink {
-//                print("❤️ \($0)")
-//            }
-//            .store(in: &cancellables)
+        
+        output.animalsResponsePublisher
+            .receive(on: RunLoop.main)
+            .sink { completion in
+                print(completion)
+                print("❤️ finished")
+            } receiveValue: { [weak self] in
+                switch $0 {
+                case .loading:
+                    self?.v.showLoading(true)
+                case let .success(animals):
+                    print(animals)
+                case .idle:
+                    self?.v.showLoading(false)
+                case let .failure(meta):
+                    print(meta)
+                }
+            }
+            .store(in: &cancellables)
         
         output.citiesResponsePublihser
             .receive(on: RunLoop.main)
