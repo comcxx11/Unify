@@ -42,7 +42,8 @@ final class LoginVC: BaseViewController {
             .sink { [weak self] event in
                 switch event {
                 case .login:
-                    self?.c?.finish()
+                    // self?.c?.finish()
+                    self?.didCoordinator?(.login)
                 }
             }
             .store(in: &cancellables)

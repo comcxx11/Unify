@@ -74,6 +74,7 @@ extension AppCoordinator: CoordinatorFinishDelegate {
         case .main:
             navigationController.viewControllers.removeAll()
             showIntroFlow()
+        
         default:
             print("childCoordinator.type: \(childCoordinator?.type ?? .app)")
             fatalError("NO cooridnator terminator")

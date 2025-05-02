@@ -9,11 +9,16 @@ import Foundation
 
 struct NetworkConfiguration {
     static let timeoutInterval: TimeInterval = 30
-
+    
     static func commonHeaders() -> [String: String] {
-        return [
-            "Content-Type": "application/json",
-            "Authorization": "Bearer YOUR_API_KEY"
+        var headers: [String: String] = [
+            "Content-Type": "application/json"
         ]
+        
+        if let accessToken = TokenStorage.shared.accessToken {
+            headers["Authorization"] = "Bearer \(accessToken)"
+        }
+        
+        return headers
     }
 }

@@ -52,8 +52,9 @@ final class LoginVM: BaseViewModel<LoginVM.CoordinatorEvent>, LoginVMType {
     
     private func login() {
         LoginService.shared.login(username: "seojin3", password: "test1234")
-            .sink { completion in
+            .sink { [weak self] completion in
                 print("Login Complete...")
+                self?.coordinatorEventSubject.send(.login)
             } receiveValue: { response in
                 print(response)
             }

@@ -60,6 +60,12 @@ final class MainCoordinator: WalletCordinatorProtocoal {
     func showLogin() {
         let vm = LoginVM()
         let vc = LoginVC(vm: vm)
+        vc.didCoordinator = { [weak self] in
+            switch $0 {
+            case .login:
+                self?.navigationController.popViewController(animated: true)
+            }
+        }
         
         self.navigationController.pushViewController(vc, animated: true)
     }

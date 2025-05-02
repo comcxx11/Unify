@@ -34,40 +34,44 @@ final class NetworkManager {
         Parameters: \(parameters ?? [:])
         """)
         
-        return AF.request(endpoint.url,
-                          method: method,
-                          parameters: parameters,
-                          encoding: encoding,
-                          headers: headers)
+        return Future<T, NetworkError> { promise in
+            AF.request(endpoint.url,
+                       method: method,
+                       parameters: parameters,
+                       encoding: encoding,
+                       headers: headers)
             .validate()
-            .responseData { response in
-                if let data = response.data {
-                    if let jsonString = String(data: data, encoding: .utf8) {
-                        print("📦 Raw JSON Response: \n\(jsonString)")
+            .responseDecodable(of: T.self) { response in
+                
+                defer {
+                    LoadingManager.shared.decrement()
+                }
+                
+                if let data = response.data,
+                   let jsonString = String(data: data, encoding: .utf8) {
+                    print("📦 Raw JSON Response: \n\(jsonString)")
+                }
+                
+                switch response.result {
+                case .success(let value):
+                    if let httpResponse = response.response {
+                        let accessToken = httpResponse.headers["Authorization"]
+                        let refreshToken = httpResponse.headers["RefreshToken"]
+                        
+                        // 저장
+                        TokenStorage.shared.save(accessToken: accessToken, refreshToken: refreshToken)
                     }
+                    promise(.success(value))
+                    
+                case .failure(let afError):
+                    let networkError = self.handleError(afError)
+                    ErrorPopupManager.shared.showError(networkError)
+                    promise(.failure(networkError))
                 }
             }
-            .publishDecodable(type: T.self)
-            .value()
-            // 테스트를 위해 지연
-            .delay(for: .seconds(delay), scheduler: DispatchQueue.main)
-            // AFError를 NetworkError로 매핑
-            .mapError { error in
-                self.handleError(error)
-            }
-            // 에러 발생 시 팝업 표시와 로딩 상태 감소 처리
-            .handleEvents(receiveCompletion: { completion in
-                // 요청 완료 시 로딩 카운터 감소
-                LoadingManager.shared.decrement()
-                if case .failure(let error) = completion {
-                    // 에러가 발생한 경우 전역 에러 팝업 표시
-                    // TODO: 추후에 각 feature 에 옮겨야 할 수도 있음
-                    ErrorPopupManager.shared.showError(error)
-                }
-            }, receiveCancel: {
-                LoadingManager.shared.decrement()
-            })
-            .eraseToAnyPublisher()
+        }
+        .delay(for: .seconds(delay), scheduler: DispatchQueue.main)
+        .eraseToAnyPublisher()
     }
     
     private func handleError(_ error: AFError) -> NetworkError {
