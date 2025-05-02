@@ -71,11 +71,11 @@ final class MainVC: BaseViewController {
                 case .loading:
                     self?.v.showLoading(true)
                 case let .success(animals):
-                    print(animals)
+                    print("🐶 animals \(animals ?? [])")
                 case .idle:
                     self?.v.showLoading(false)
                 case let .failure(meta):
-                    print(meta)
+                    print("🐶 Animal failure: \(meta)")
                 }
             }
             .store(in: &cancellables)
@@ -90,11 +90,11 @@ final class MainVC: BaseViewController {
                 case .loading:
                     self?.v.showLoading(true)
                 case let .success(cities):
-                    print(cities)
+                    print("🌇 cities \(cities ?? [])")
                 case .idle:
                     self?.v.showLoading(false)
                 case let .failure(meta):
-                    print(meta)
+                    print("🌇 City failure: \(meta)")
                 }
             }
             .store(in: &cancellables)
