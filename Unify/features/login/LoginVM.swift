@@ -36,10 +36,10 @@ final class LoginVM: BaseViewModel<LoginVM.CoordinatorEvent>, LoginVMType {
             .store(in: &cancellables)
         
         input.buttonTapped
-            .sink {
+            .sink { [weak self] in
                 switch $0 {
-                case .back:
-                    break
+                case .login:
+                    self?.login()
                 }
             }
             .store(in: &cancellables)
@@ -48,5 +48,16 @@ final class LoginVM: BaseViewModel<LoginVM.CoordinatorEvent>, LoginVMType {
             coordinator: coordinatorEventSubject.eraseToAnyPublisher()
         )
         
+    }
+    
+    private func login() {
+        LoginService.shared.login(username: "seojin3", password: "test1234")
+            .sink { completion in
+                print("Login Complete...")
+            } receiveValue: { response in
+                print(response)
+            }
+            .store(in: &cancellables)
+
     }
 }

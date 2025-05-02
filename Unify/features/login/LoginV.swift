@@ -12,11 +12,11 @@ import Combine
 final class LoginV: BaseView<LoginV.ButtonEvent> {
     
     enum ButtonEvent {
-        case back
+        case login
     }
     
     let button = ConfirmButton().then {
-        $0.titleLabel?.text = "Login"
+        $0.setButtonTitle("로그인")
     }
     
     override func addSubviews() {
@@ -25,10 +25,21 @@ final class LoginV: BaseView<LoginV.ButtonEvent> {
         }
     }
     
+    override func configureSubviews() {
+        self.backgroundColor = .white
+    }
+    
     override func setupConstraints() {
         button.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview().offset(20)
+            $0.leading.trailing.bottom.equalToSuperview().inset(20)
+            $0.height.equalTo(48)
         }
+    }
+    
+    override func setupEvents() {
+        button
+            .bindTap(to: buttonTappedSubject, event: .login)
+            .store(in: &cancellables)
     }
     
 }

@@ -38,7 +38,8 @@ final class MainCoordinator: WalletCordinatorProtocoal {
                 self?.finish()
             case .notice:
                 // self?.showNotice()
-                self?.showAppVersion()
+                // self?.showAppVersion()
+                self?.showLogin()
             }
         }
         self.navigationController.pushViewController(vc, animated: false)
@@ -52,6 +53,13 @@ final class MainCoordinator: WalletCordinatorProtocoal {
         let vm = NoticeVM()
         let v = NoticeV(vm: vm)
         let vc = UIHostingController(rootView: v)
+        
+        self.navigationController.pushViewController(vc, animated: true)
+    }
+    
+    func showLogin() {
+        let vm = LoginVM()
+        let vc = LoginVC(vm: vm)
         
         self.navigationController.pushViewController(vc, animated: true)
     }
