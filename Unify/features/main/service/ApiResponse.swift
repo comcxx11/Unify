@@ -19,3 +19,10 @@ struct Meta: Codable {
     let timestamp: String
     let message: String
 }
+
+enum LoadingState<T> {
+    case idle
+    case loading
+    case success(T)
+    case failure(Meta)
+}

@@ -28,7 +28,7 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
     struct Output {
         let coordinatorEvent: AnyPublisher<CoordinatorEvent, Never>
         let animalsResponsePublisher: AnyPublisher<ApiResponse<[Animal]?>, Never>
-        let citiesResponsePublihser: AnyPublisher<ApiResponse<[City]?>, Never>
+        let citiesResponsePublihser: AnyPublisher<LoadingState<[City]>, Never>
     }
     
     func transform(from input: Input) -> Output {
@@ -48,10 +48,17 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
             }
         
         let citiesResponsePublisher = apiEventReceived
-            .compactMap { event -> ApiResponse<[City]?>? in
+            .compactMap { event -> LoadingState? in
                 if case let .citiesResponse(response) = event {
-                    return response
+                    if response.meta.statusCode == 200, let cities = response.data {
+                        return .success(cities ?? [])
+                    } else {
+                        return .failure(response.meta)
+                    }
                 }
+                
+                if case .loading = event { return .loading }
+                if case .idle = event { return .idle }
                 return nil
             }
         
@@ -92,10 +99,13 @@ extension MainVM {
     }
     
     private func fetchCities() {
+        apiEventReceived.send(.loading)
+        
         JsonService.shared.cities()
-            .sink {completion in
+            .sink { [weak self] completion in
                 print("com \(completion)")
-            } receiveValue: {  [weak self] response in
+                self?.apiEventReceived.send(.idle)
+            } receiveValue: { [weak self] response in
                 self?.apiEventReceived.send(.citiesResponse(response))
             }
             .store(in: &cancellables)

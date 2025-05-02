@@ -8,9 +8,6 @@
 import UIKit
 import Combine
 
-
-
-
 final class MainVC: BaseViewController {
     
     private let v = MainV()
@@ -77,7 +74,16 @@ final class MainVC: BaseViewController {
                 print(completion)
                 print("❤️ finished")
             } receiveValue: {
-                print("❤️ \($0)")
+                switch $0 {
+                case .loading:
+                    print("LOADING")
+                case let .success(cities):
+                    print(cities)
+                case .idle:
+                    print("IDLE")
+                case let .failure(meta):
+                    print(meta)
+                }
             }
             .store(in: &cancellables)
     }
