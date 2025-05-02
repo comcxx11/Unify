@@ -27,8 +27,8 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
     
     struct Output {
         let coordinatorEvent: AnyPublisher<CoordinatorEvent, Never>
-        let animalsResponsePubliser: AnyPublisher<[Animal], Never>
-        let citiesResponsePubliser: AnyPublisher<[City]?, NetworkError>
+        let animalsResponsePublisher: AnyPublisher<ApiResponse<[Animal]?>, Never>
+        let citiesResponsePublihser: AnyPublisher<ApiResponse<[City]?>, Never>
     }
     
     func transform(from input: Input) -> Output {
@@ -40,27 +40,20 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
             .store(in: &cancellables)
         
         let animalsResponsePubliser = apiEventReceived
-            .compactMap { event -> [Animal]? in
-                if case let .animalResponse(apiResponse) = event {
-                    return apiResponse.data
+            .compactMap { event -> ApiResponse<[Animal]?>? in
+                if case let .animalResponse(response) = event {
+                    return response
                 }
                 return nil
             }
         
-        let citiesResponsePubliser = apiEventReceived
-            .tryMap { event -> [City]? in
-                guard case let .citiesResponse(apiResponse) = event else {
-                    throw NetworkError.requestFailed
+        let citiesResponsePublisher = apiEventReceived
+            .compactMap { event -> ApiResponse<[City]?>? in
+                if case let .citiesResponse(response) = event {
+                    return response
                 }
-
-                
-                guard apiResponse.meta.statusCode == 200 else {
-                    throw NetworkError.apiError(apiResponse.meta.message)
-                }
-                
-                return apiResponse.data
+                return nil
             }
-            .mapError { $0 as? NetworkError ?? .requestFailed }
         
         input.buttonTapped
             .sink { [weak self] in
@@ -77,8 +70,8 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
         
         return Output(
             coordinatorEvent: coordinatorEventSubject.eraseToAnyPublisher(),
-            animalsResponsePubliser: animalsResponsePubliser.eraseToAnyPublisher(),
-            citiesResponsePubliser: citiesResponsePubliser.eraseToAnyPublisher()
+            animalsResponsePublisher: animalsResponsePubliser.eraseToAnyPublisher(),
+            citiesResponsePublihser: citiesResponsePublisher.eraseToAnyPublisher()
         )
         
     }
@@ -100,19 +93,11 @@ extension MainVM {
     
     private func fetchCities() {
         JsonService.shared.cities()
-            .handleEvents(receiveSubscription: { _ in
-                print("🌐 도시 불러오는 중...")
-            }, receiveCompletion: { completion in
-                print("🔚 Completion: \(completion)")
-            })
-            .sink(receiveCompletion: { [weak self] completion in
-                if case let .failure(error) = completion {
-                    ErrorPopupManager.shared.showError(error)
-                    self?.apiEventReceived.send(.citiesFailed(error))
-                }
-            }, receiveValue: { [weak self] response in
+            .sink {completion in
+                print("com \(completion)")
+            } receiveValue: {  [weak self] response in
                 self?.apiEventReceived.send(.citiesResponse(response))
-            })
+            }
             .store(in: &cancellables)
     }
 }

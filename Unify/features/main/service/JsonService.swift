@@ -16,14 +16,14 @@ struct JsonResponse: Decodable {
 }
 
 enum JsonServiceEvent {
-    case animalResponse(ApiResponse<[Animal]>)
-    case citiesResponse(ApiResponse<[City]>)
+    case animalResponse(ApiResponse<[Animal]?>)
+    case citiesResponse(ApiResponse<[City]?>)
     case citiesFailed(NetworkError)
 }
 
 protocol JsonServiceProtocol {
-    func animals() -> AnyPublisher<ApiResponse<[Animal]>, NetworkError>
-    func cities() -> AnyPublisher<ApiResponse<[City]>, NetworkError>
+    func animals() -> AnyPublisher<ApiResponse<[Animal]?>, NetworkError>
+    func cities() -> AnyPublisher<ApiResponse<[City]?>, NetworkError>
 }
 
 final class JsonService: JsonServiceProtocol {
@@ -31,11 +31,11 @@ final class JsonService: JsonServiceProtocol {
     static let shared = JsonService()
     private init() { }
     
-    func animals() -> AnyPublisher<ApiResponse<[Animal]>, NetworkError> {
+    func animals() -> AnyPublisher<ApiResponse<[Animal]?>, NetworkError> {
         return NetworkManager.shared.request(endpoint: .animals)
     }
     
-    func cities() -> AnyPublisher<ApiResponse<[City]>, NetworkError> {
+    func cities() -> AnyPublisher<ApiResponse<[City]?>, NetworkError> {
         return NetworkManager.shared.request(endpoint: .cities)
     }
     

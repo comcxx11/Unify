@@ -64,21 +64,21 @@ final class MainVC: BaseViewController {
             }
             .store(in: &cancellables)
         
-        output.animalsResponsePubliser
+        output.animalsResponsePublisher
             .receive(on: RunLoop.main)
             .sink {
                 print("❤️ \($0)")
             }
             .store(in: &cancellables)
         
-        output.citiesResponsePubliser
+        output.citiesResponsePublihser
             .receive(on: RunLoop.main)
             .sink { completion in
                 print(completion)
+                print("❤️ finished")
             } receiveValue: {
-                print("❤️ \($0 ?? [])")
+                print("❤️ \($0)")
             }
             .store(in: &cancellables)
-
     }
 }

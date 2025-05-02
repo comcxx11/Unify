@@ -16,7 +16,7 @@ enum NetworkError: LocalizedError {
     case decodingFailed
     case serverError
     case unauthorized
-    case apiError(String)
+    case apiError(Meta)
     case encryptionError(Error)
     
     var errorDescription: String? {
@@ -33,8 +33,8 @@ enum NetworkError: LocalizedError {
             return "서버 오류가 발생했습니다."
         case .unauthorized:
             return "인증되지 않은 사용자입니다."
-        case .apiError(let message):
-            return message
+        case .apiError(let meta):
+            return meta.message
         case .encryptionError(let error):
             return "\(error.localizedDescription)"
         }
