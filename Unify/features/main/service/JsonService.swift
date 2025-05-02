@@ -10,42 +10,20 @@ import Foundation
 import Combine
 import Alamofire
 
-struct JsonResponse: Decodable {
-    let success: Bool
-    let message: String
-}
-
-enum JsonServiceEvent {
-    case animalResponse(ApiResponse<[Animal]?>)
-    case citiesResponse(ApiResponse<[City]?>)
+enum ApiEvent<T: Decodable> {
     case loading
     case idle
+    case success(ApiResponse<T>)
+    case failure(NetworkError)
 }
 
-func mapEvent<T>(
-    from event: JsonServiceEvent,
-    match: (JsonServiceEvent) -> ApiResponse<T>?,
-    type: T.Type
-) -> LoadingState<T>? {
-    if let response = match(event) {
-        if response.meta.statusCode == 200, let data = response.data {
-            return .success(data)
-        } else {
-            return .failure(response.meta)
-        }
-    }
-
-    if case .loading = event {
-        return .loading
-    }
-
-    if case .idle = event {
-        return .idle
-    }
-
-    return nil
-}
-
+//enum JsonServiceEvent {
+//    case animalResponse(ApiResponse<[Animal]?>)
+//    case citiesResponse(ApiResponse<[City]?>)
+//    case loading
+//    case idle
+//    case apiError(NetworkError)
+//}
 
 protocol JsonServiceProtocol {
     func animals() -> AnyPublisher<ApiResponse<[Animal]?>, NetworkError>
