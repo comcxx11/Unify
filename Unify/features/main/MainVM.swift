@@ -31,6 +31,7 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
     enum CoordinatorEvent {
         case next
         case notice
+        case todo_swiftui
     }
 
     // MARK: - I/O 정의
@@ -71,9 +72,18 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
             }
 
         input.buttonTapped
-            .filter { $0 == .next }
-            .sink { [weak self] _ in
+            .sink { [weak self] in
+              switch $0 {
+                
+              case .next:
                 self?.coordinatorEventSubject.send(.notice)
+              case .animals, .cities:
+                break
+              case .logout:
+                break
+              case .todo_swiftui:
+                self?.coordinatorEventSubject.send(.todo_swiftui)
+              }
             }
             .store(in: &cancellables)
 

@@ -40,6 +40,10 @@ final class MainCoordinator: WalletCordinatorProtocoal {
                 // self?.showNotice()
                 // self?.showAppVersion()
                 self?.showLogin()
+            case .todo_swiftui:
+              // self?.showSwiftUI()
+              // self?.showSwiftUIWrapper()
+              self?.showUIKit()
             }
         }
         self.navigationController.pushViewController(vc, animated: false)
@@ -48,6 +52,26 @@ final class MainCoordinator: WalletCordinatorProtocoal {
     func binding() {
         
     }
+  
+  func showSwiftUI() {
+    let v = TodoSwiftUIView()
+    let vc = UIHostingController(rootView: v)
+    
+    self.navigationController.pushViewController(vc, animated: true)
+  }
+    
+  
+  func showSwiftUIWrapper() {
+    let v = TodoSwiftUIViewWrapper()
+    let vc = UIHostingController(rootView: v)
+    
+    self.navigationController.pushViewController(vc, animated: true)
+  }
+  
+  func showUIKit() {
+    let vc = TodoViewController()
+    self.navigationController.pushViewController(vc, animated: true)
+  }
     
     func showNotice() {
         let vm = NoticeVM()

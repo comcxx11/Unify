@@ -16,6 +16,7 @@ final class MainV: BaseView<MainV.ButtonEvent> {
         case animals
         case cities
         case logout
+        case todo_swiftui
     }
 
     struct MenuItem: Hashable {
@@ -27,7 +28,8 @@ final class MainV: BaseView<MainV.ButtonEvent> {
         .init(title: "ANIMAL", event: .animals),
         .init(title: "CITY", event: .cities),
         .init(title: "다음", event: .next),
-        .init(title: "로그아웃", event: .logout)
+        .init(title: "로그아웃", event: .logout),
+        .init(title: "TodoSwifTUI", event: .todo_swiftui)
     ]
 
     private let tableView = UITableView().then {
