@@ -7,74 +7,75 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 final class MainV: BaseView<MainV.ButtonEvent> {
-    
+
     enum ButtonEvent {
         case next
         case animals
         case cities
     }
-    
-    let button = UIButton().then {
-        $0.setTitle("다음", for: .normal)
-        $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .blue
+
+    struct MenuItem: Hashable {
+        let title: String
+        let event: ButtonEvent
     }
-    
-    let button2 = UIButton().then {
-        $0.setTitle("ANIMAL", for: .normal)
-        $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .blue
+
+    private let items: [MenuItem] = [
+        .init(title: "ANIMAL", event: .animals),
+        .init(title: "CITY", event: .cities),
+        .init(title: "다음", event: .next)
+    ]
+
+    private let tableView = UITableView().then {
+        $0.separatorStyle = .none
+        $0.rowHeight = 60
+        $0.backgroundColor = .clear
+        $0.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
     }
-    
-    let button3 = UIButton().then {
-        $0.setTitle("CITY", for: .normal)
-        $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .blue
-    }
-    
+
     override func addSubviews() {
-        [button, button2, button3].forEach {
-            addSubview($0)
-        }
+        addSubview(tableView)
     }
-    
+
     override func configureSubviews() {
         backgroundColor = .yellow
+        tableView.delegate = self
+        tableView.dataSource = self
     }
-    
+
     override func setupConstraints() {
-        
-        button.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview().inset(16)
-            $0.height.equalTo(50)
+        tableView.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(16)
         }
-        
-        button2.snp.makeConstraints {
-            $0.leading.trailing.top.equalToSuperview().inset(100)
-            $0.height.equalTo(50)
-        }
-        
-        button3.snp.makeConstraints {
-            $0.top.equalTo(button2.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview().inset(100)
-            $0.height.equalTo(50)
-        }
-        
     }
     
-    override func setupEvents() {
-        button
-            .bindTap(to: buttonTappedSubject, event: .next)
-            .store(in: &cancellables)
-        
-        button2
-            .bindTap(to: buttonTappedSubject, event: .animals)
-            .store(in: &cancellables)
-        
-        button3
-            .bindTap(to: buttonTappedSubject, event: .cities)
-            .store(in: &cancellables)
+}
+
+extension MainV: UITableViewDataSource, UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return items.count
     }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let item = items[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        var config = UIListContentConfiguration.cell()
+        config.text = item.title
+        config.textProperties.color = .white
+        cell.contentConfiguration = config
+        cell.backgroundColor = .blue
+        cell.selectionStyle = .none
+        cell.layer.cornerRadius = 10
+        cell.clipsToBounds = true
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let event = items[indexPath.row].event
+        buttonTappedSubject.send(event)
+    }
+
 }

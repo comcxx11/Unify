@@ -75,6 +75,9 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
         )
         
     }
+}
+
+extension MainVM {
     
     private func fetchAnimals() {
         print("fetch ...")
@@ -87,7 +90,6 @@ final class MainVM: BaseViewModel<MainVM.CoordinatorEvent>, MainVMType {
             .store(in: &cancellables)
 
     }
-    
     
     private func fetchCities() {
         print("fetch ...")
